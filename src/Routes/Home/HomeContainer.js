@@ -5,7 +5,7 @@ import { moviesApi } from "api";
 export default class extends React.Component {
   state = {
     nowPlaying: null,
-    upCommig: null,
+    upcoming: null,
     popular: null,
     error: null,
     loading: true,
@@ -17,14 +17,14 @@ export default class extends React.Component {
         data: { results: nowPlaying },
       } = await moviesApi.nowPlaying();
       const {
-        data: { results: upCommig },
-      } = await moviesApi.upCommig();
+        data: { results: upcoming },
+      } = await moviesApi.upcoming();
       const {
         data: { results: popular },
       } = await moviesApi.popular();
       this.setState({
         nowPlaying,
-        upCommig,
+        upcoming,
         popular,
       });
     } catch {
@@ -39,11 +39,11 @@ export default class extends React.Component {
   }
 
   render() {
-    const { nowPlaying, upCommig, popular, error, loading } = this.state;
+    const { nowPlaying, upcoming, popular, error, loading } = this.state;
     return (
       <HomePresenter
         nowPlaying={nowPlaying}
-        upCommig={upCommig}
+        upcoming={upcoming}
         popular={popular}
         error={error}
         loading={loading}
