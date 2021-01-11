@@ -66,6 +66,34 @@ const Overview = styled.p`
   width: 50%;
 `;
 
+const ImdbLink = styled.a`
+  display: inline-block;
+  width: 40px;
+  background: url(${require("assets/imdbIcon.png").default}) no-repeat center;
+  background-size: cover;
+  text-indent: -9999px;
+`;
+
+const CompaniesContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+`;
+
+const Company = styled.img`
+  width: 100px;
+  :not(:last-child) {
+    margin-right: 15px;
+  }
+`;
+
+const VideoContainer = styled.div``;
+
+const Video = styled.iframe`
+  width: 700px;
+  height: 350px;
+`;
+
 const DetailPresenter = ({ result, error, loading }) =>
   loading ? (
     <>
@@ -120,8 +148,41 @@ const DetailPresenter = ({ result, error, loading }) =>
                     : `${genre.name} / `
                 )}
             </Item>
+            {result.imdb_id && (
+              <>
+                <Divider>&middot;</Divider>
+                <ImdbLink
+                  href={`https://www.imdb.com/title/${result.imdb_id}`}
+                  target="_blank"
+                >
+                  IMDB
+                </ImdbLink>
+              </>
+            )}
           </ItemContainer>
           <Overview>{result.overview}</Overview>
+          <CompaniesContainer>
+            {result.production_companies &&
+              result.production_companies.map((company) =>
+                company.logo_path ? (
+                  <Company
+                    key={company.id}
+                    src={`https://image.tmdb.org/t/p/original${company.logo_path}`}
+                    alt={company.name}
+                  />
+                ) : null
+              )}
+          </CompaniesContainer>
+          <VideoContainer>
+            {result.videos && (
+              <Video
+                src={`https://www.youtube.com/embed/${result.videos.results[0].key}`}
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
+            )}
+          </VideoContainer>
         </Data>
       </Content>
     </Container>
