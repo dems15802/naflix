@@ -121,7 +121,7 @@ const DetailPresenter = ({ result, error, loading }) =>
       <Loader />
     </>
   ) : error ? (
-    <Message />
+    <Message color={"#e74c3c"} text={error} />
   ) : (
     <Container>
       <Helmet>
