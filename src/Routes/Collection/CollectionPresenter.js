@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import Helmet from "react-helmet";
 import Loader from "Components/Loader";
 import Message from "Components/Message";
-import Section from "Components/Section";
 import Poster from "Components/Poster";
 
 const Container = styled.div`
