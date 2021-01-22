@@ -43,3 +43,7 @@ export const tvApi = {
       },
     }),
 };
+
+export const collectionsApi = {
+  collectionDetail: (id) => api.get(`collection/${id}`),
+};

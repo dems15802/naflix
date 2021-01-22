@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import Helmet from "react-helmet";
@@ -81,7 +82,7 @@ const CompaniesContainer = styled.div`
 `;
 
 const Company = styled.img`
-  width: 100px;
+  width: 50px;
   :not(:last-child) {
     margin-right: 15px;
   }
@@ -90,8 +91,25 @@ const Company = styled.img`
 const VideoContainer = styled.div``;
 
 const Video = styled.iframe`
-  width: 700px;
-  height: 350px;
+  width: 400px;
+  height: 200px;
+`;
+
+const CollectionContainer = styled.div`
+  margin-top: 20px;
+`;
+
+const CollectionName = styled.h4`
+  margin-bottom: 10px;
+  font-size: 14px;
+`;
+
+const CollectionLink = styled(Link)`
+  display: block;
+  width: 100px;
+  height: 150px;
+  background: url(${(props) => props.bgImage}) center;
+  background-size: cover;
 `;
 
 const DetailPresenter = ({ result, error, loading }) =>
@@ -133,7 +151,7 @@ const DetailPresenter = ({ result, error, loading }) =>
             <Item>
               {result.release_date
                 ? result.release_date.substring(0, 4)
-                : result.first_air_date.substring(0, 4)}
+                : result.first_air_date?.substring(0, 4)}
             </Item>
             <Divider>&middot;</Divider>
             <Item>
@@ -176,13 +194,31 @@ const DetailPresenter = ({ result, error, loading }) =>
           <VideoContainer>
             {result.videos && (
               <Video
-                src={`https://www.youtube.com/embed/${result.videos.results[0].key}`}
+                src={`https://www.youtube.com/embed/${result.videos.results[0]?.key}`}
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
               />
             )}
           </VideoContainer>
+          <CollectionContainer>
+            {result.belongs_to_collection && (
+              <>
+                <CollectionName>
+                  {result.belongs_to_collection.name}
+                </CollectionName>
+                <CollectionLink
+                  bgImage={
+                    result.belongs_to_collection.poster_path
+                      ? `https://image.tmdb.org/t/p/original${result.belongs_to_collection.poster_path}`
+                      : require("assets/noPosterSmall.png").default
+                  }
+                  to={`/collection/${result.belongs_to_collection.id}`}
+                  replace={true}
+                />
+              </>
+            )}
+          </CollectionContainer>
         </Data>
       </Content>
     </Container>
