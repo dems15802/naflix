@@ -24,7 +24,7 @@ export default class extends React.Component {
     try {
       ({ data: result } = await collectionsApi.collectionDetail(id));
     } catch {
-      this.setState({ error: "Can't find TV information" });
+      this.setState({ error: "Can't find any Collection" });
     } finally {
       this.setState({ loading: false, result });
     }

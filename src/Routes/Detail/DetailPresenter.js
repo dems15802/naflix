@@ -1,10 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Route, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import Helmet from "react-helmet";
 import Loader from "Components/Loader";
 import Message from "Components/Message";
+import Countries from "Components/Countries";
+import Companies from "Components/Companies";
+import Trailers from "Components/Trailers";
+import Collection from "Components/Collection";
+import Seasons from "Components/Seasons";
 
 const Container = styled.div`
   height: calc(100vh - 50px);
@@ -75,154 +80,198 @@ const ImdbLink = styled.a`
   text-indent: -9999px;
 `;
 
-const CompaniesContainer = styled.div`
+const InsideContainer = styled.section`
+  margin-top: 30px;
+`;
+
+const InsideMenu = styled.ul`
   display: flex;
-  align-items: center;
-  margin: 20px 0;
 `;
 
-const Company = styled.img`
-  width: 50px;
-  :not(:last-child) {
-    margin-right: 15px;
-  }
+const MenuItem = styled.li`
+  margin-right: 20px;
+  font-size: 15px;
+  color: ${(props) => (props.active ? "#f1c40f" : "#fff")};
 `;
 
-const VideoContainer = styled.div``;
-
-const Video = styled.iframe`
-  width: 400px;
-  height: 200px;
-`;
-
-const CollectionContainer = styled.div`
-  margin-top: 20px;
-`;
-
-const CollectionName = styled.h4`
-  margin-bottom: 10px;
-  font-size: 14px;
-`;
-
-const CollectionLink = styled(Link)`
-  display: block;
-  width: 100px;
-  height: 150px;
-  background: url(${(props) => props.bgImage}) center;
-  background-size: cover;
-`;
-
-const DetailPresenter = ({ result, error, loading }) =>
-  loading ? (
-    <>
-      <Helmet>
-        <title>Loading | Naflix</title>
-      </Helmet>
-      <Loader />
-    </>
-  ) : error ? (
-    <Message color={"#e74c3c"} text={error} />
-  ) : (
-    <Container>
-      <Helmet>
-        <title>
-          {result.original_title ? result.original_title : result.original_name}{" "}
-          | Naflix
-        </title>
-      </Helmet>
-      <Backdrop
-        bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
-      />
-      <Content>
-        <Cover
-          bgImage={
-            result.poster_path
-              ? `https://image.tmdb.org/t/p/original${result.poster_path}`
-              : require("assets/noPosterSmall.png").default
-          }
-        />
-        <Data>
-          <Title>
+const DetailPresenter = withRouter(
+  ({ location, match, result, error, loading }) =>
+    loading ? (
+      <>
+        <Helmet>
+          <title>Loading | Naflix</title>
+        </Helmet>
+        <Loader />
+      </>
+    ) : error ? (
+      <Message color={"#e74c3c"} text={error} />
+    ) : (
+      <Container>
+        <Helmet>
+          <title>
             {result.original_title
               ? result.original_title
-              : result.original_name}
-          </Title>
-          <ItemContainer>
-            <Item>
-              {result.release_date
-                ? result.release_date.substring(0, 4)
-                : result.first_air_date?.substring(0, 4)}
-            </Item>
-            <Divider>&middot;</Divider>
-            <Item>
-              {result.runtime ? result.runtime : result.episode_run_time[0]} min
-            </Item>
-            <Divider>&middot;</Divider>
-            <Item>
-              {result.genres &&
-                result.genres.map((genre, index) =>
-                  index === result.genres.length - 1
-                    ? genre.name
-                    : `${genre.name} / `
-                )}
-            </Item>
-            {result.imdb_id && (
-              <>
-                <Divider>&middot;</Divider>
-                <ImdbLink
-                  href={`https://www.imdb.com/title/${result.imdb_id}`}
-                  target="_blank"
-                >
-                  IMDB
-                </ImdbLink>
-              </>
-            )}
-          </ItemContainer>
-          <Overview>{result.overview}</Overview>
-          <CompaniesContainer>
-            {result.production_companies &&
-              result.production_companies.map((company) =>
-                company.logo_path ? (
-                  <Company
-                    key={company.id}
-                    src={`https://image.tmdb.org/t/p/original${company.logo_path}`}
-                    alt={company.name}
-                  />
-                ) : null
+              : result.original_name}{" "}
+            | Naflix
+          </title>
+        </Helmet>
+        <Backdrop
+          bgImage={`https://image.tmdb.org/t/p/original${result.backdrop_path}`}
+        />
+        <Content>
+          <Cover
+            bgImage={
+              result.poster_path
+                ? `https://image.tmdb.org/t/p/original${result.poster_path}`
+                : require("assets/noPosterSmall.png").default
+            }
+          />
+          <Data>
+            <Title>
+              {result.original_title
+                ? result.original_title
+                : result.original_name}
+            </Title>
+            <ItemContainer>
+              <Item>
+                {result.release_date
+                  ? result.release_date.substring(0, 4)
+                  : result.first_air_date?.substring(0, 4)}
+              </Item>
+              <Divider>&middot;</Divider>
+              <Item>
+                {result.runtime ? result.runtime : result.episode_run_time[0]}{" "}
+                min
+              </Item>
+              <Divider>&middot;</Divider>
+              <Item>
+                {result.genres &&
+                  result.genres.map((genre, index) =>
+                    index === result.genres.length - 1
+                      ? genre.name
+                      : `${genre.name} / `
+                  )}
+              </Item>
+              {result.imdb_id && (
+                <>
+                  <Divider>&middot;</Divider>
+                  <ImdbLink
+                    href={`https://www.imdb.com/title/${result.imdb_id}`}
+                    target="_blank"
+                  >
+                    IMDB
+                  </ImdbLink>
+                </>
               )}
-          </CompaniesContainer>
-          <VideoContainer>
-            {result.videos && (
-              <Video
-                src={`https://www.youtube.com/embed/${result.videos.results[0]?.key}`}
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              />
-            )}
-          </VideoContainer>
-          <CollectionContainer>
-            {result.belongs_to_collection && (
-              <>
-                <CollectionName>
-                  {result.belongs_to_collection.name}
-                </CollectionName>
-                <CollectionLink
-                  bgImage={
-                    result.belongs_to_collection.poster_path
-                      ? `https://image.tmdb.org/t/p/original${result.belongs_to_collection.poster_path}`
-                      : require("assets/noPosterSmall.png").default
+            </ItemContainer>
+            <Overview>{result.overview}</Overview>
+            <InsideContainer>
+              <InsideMenu>
+                <MenuItem active={location.pathname.includes("/countries")}>
+                  {location.pathname.includes("/movie") ? (
+                    <Link to={`/movie/${match.params.id}/countries`}>
+                      Countries
+                    </Link>
+                  ) : (
+                    <Link to={`/show/${match.params.id}/countries`}>
+                      Countries
+                    </Link>
+                  )}
+                </MenuItem>
+                <MenuItem active={location.pathname.includes("/companies")}>
+                  {location.pathname.includes("/movie") ? (
+                    <Link to={`/movie/${match.params.id}/companies`}>
+                      Companies
+                    </Link>
+                  ) : (
+                    <Link to={`/show/${match.params.id}/companies`}>
+                      Companies
+                    </Link>
+                  )}
+                </MenuItem>
+                <MenuItem active={location.pathname.includes("/trailers")}>
+                  {location.pathname.includes("/movie") ? (
+                    <Link to={`/movie/${match.params.id}/trailers`}>
+                      Trailers
+                    </Link>
+                  ) : (
+                    <Link to={`/show/${match.params.id}/trailers`}>
+                      Trailers
+                    </Link>
+                  )}
+                </MenuItem>
+                <MenuItem
+                  active={
+                    location.pathname.includes("/collection") ||
+                    location.pathname.includes("/season")
                   }
-                  to={`/collection/${result.belongs_to_collection.id}`}
-                  replace={true}
-                />
-              </>
-            )}
-          </CollectionContainer>
-        </Data>
-      </Content>
-    </Container>
-  );
+                >
+                  {location.pathname.includes("/movie") ? (
+                    <Link to={`/movie/${match.params.id}/collection`}>
+                      Collection
+                    </Link>
+                  ) : (
+                    <Link to={`/show/${match.params.id}/season`}>Season</Link>
+                  )}
+                </MenuItem>
+              </InsideMenu>
+              {console.log(result)}
+
+              {location.pathname.includes("/movie") ? (
+                <>
+                  <Route
+                    path="/movie/:id/countries"
+                    render={() => (
+                      <Countries countries={result.production_countries} />
+                    )}
+                  />
+                  <Route
+                    path="/movie/:id/companies"
+                    render={() => (
+                      <Companies companies={result.production_companies} />
+                    )}
+                  />
+                  <Route
+                    path="/movie/:id/trailers"
+                    render={() => <Trailers trailers={result.videos.results} />}
+                  />
+                  <Route
+                    path="/movie/:id/collection"
+                    render={() => (
+                      <Collection collection={result.belongs_to_collection} />
+                    )}
+                  />
+                </>
+              ) : (
+                <>
+                  <Route
+                    path="/show/:id/countries"
+                    render={() => (
+                      <Countries countries={result.production_countries} />
+                    )}
+                  />
+                  <Route
+                    path="/show/:id/companies"
+                    render={() => (
+                      <Companies companies={result.production_companies} />
+                    )}
+                  />
+                  <Route
+                    path="/show/:id/trailers"
+                    render={() => <Trailers trailers={result.videos.results} />}
+                  />
+                  <Route
+                    path="/show/:id/season"
+                    render={() => <Seasons seasons={result.seasons} />}
+                  />
+                </>
+              )}
+            </InsideContainer>
+          </Data>
+        </Content>
+      </Container>
+    )
+);
 
 DetailPresenter.propTypes = {
   result: PropTypes.object,
